@@ -12,7 +12,7 @@ import com.acsia.server.support.ServerApplication;
  * Created by Acsia on 12/9/2016.
  */
 
-public class AudioService extends Service {
+public class AudioHandler extends Service {
     @Override
     public void onCreate() {
         super.onCreate();

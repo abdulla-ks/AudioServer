@@ -5,15 +5,11 @@ package com.acsia.server.support;
  */
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.acsia.server.aidl.AudioService;
-import com.acsia.server.thrift.ThriftService;
 import com.acsia.server.ui.MainActivity;
 
 public class BootReceiver extends BroadcastReceiver {

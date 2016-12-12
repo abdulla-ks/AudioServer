@@ -1,15 +1,10 @@
 package com.acsia.server.ui;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.acsia.server.R;
-import com.acsia.server.aidl.AudioService;
 import com.acsia.server.support.ServerApplication;
-import com.acsia.server.thrift.ThriftService;
 
 public class MainActivity extends RuntimePermissionsActivity {
 

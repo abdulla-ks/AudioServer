@@ -51,8 +51,7 @@
 
         <service android:name="com.acsia.server.thrift.ThriftService"></service>
         <service
-            android:name=".aidl.AudioService"
-            android:process=":remote">
+            android:name=".aidl.AudioHandler" >
             <intent-filter>
                 <action android:name="server.AudioService" />
             </intent-filter>

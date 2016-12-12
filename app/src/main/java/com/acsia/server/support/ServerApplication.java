@@ -12,9 +12,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.acsia.server.aidl.AudioService;
+import com.acsia.server.aidl.AudioHandler;
 import com.acsia.server.thrift.ThriftService;
-import com.acsia.server.ui.MainActivity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -56,7 +55,7 @@ public class ServerApplication extends Application {
     }
 
     private void startAidlService() {
-        Intent serviceIntent = new Intent(this, AudioService.class);
+        Intent serviceIntent = new Intent(this, AudioHandler.class);
         startService(serviceIntent);
     }
 
@@ -68,31 +67,34 @@ public class ServerApplication extends Application {
     public static int getMaxAudioLevel() {
         int maxVolume = -1;
         try {
-            AudioManager audioManager = (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
-            maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            maxVolume = getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "getMaxAudioLevel::" + maxVolume);
+       // Log.d(TAG, "getMaxAudioLevel::" + maxVolume);
         return maxVolume;
+    }
+
+    private static AudioManager getAudioManager() {
+        return (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
     }
 
     public static int getAudioLevel() {
         int volume = -1;
         try {
-            AudioManager audioManager = (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
-            volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            volume = getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "getAudioLevel::" + volume);
+       // Log.d(TAG, "getAudioLevel::" + volume);
         return volume;
     }
 
     public static boolean setAudioLevel(int volumeLevel, boolean headUnit) {
+        System.out.println("volumeLevel = [" + volumeLevel + "], headUnit = [" + headUnit + "]");
         boolean success = false;
         try {
-            AudioManager audioManager = (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
+            AudioManager audioManager = getAudioManager();
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
             if (headUnit) {
                 audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI);
@@ -102,7 +104,7 @@ public class ServerApplication extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "setAudioLevel::" + success);
+      //  Log.d(TAG, "setAudioLevel::" + success);
         return success;
     }
 
@@ -132,8 +134,8 @@ public class ServerApplication extends Application {
     public static boolean isMute() {
         boolean mute = false;
         try {
-            AudioManager audioManager = (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
-            int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+            int currentVolume = getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC);
             if (currentVolume == 0) {
                 mute = true;
             }
@@ -145,18 +147,25 @@ public class ServerApplication extends Application {
 
 
     public static boolean muteAudio(boolean mute) {
+
         boolean success = false;
         try {
-            AudioManager audioManager = (AudioManager) getInstance().getSystemService(Context.AUDIO_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+                if (mute) {
+                    System.out.println("ServerApplication.muteAudio::mute = [" + mute + "] Build = M" );
+                    getAudioManager().adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+                } else {
+                    System.out.println("ServerApplication.muteAudio::mute = [" + mute + "] Build = M");
+                    getAudioManager().adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                }
             } else {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, mute);
+                getAudioManager().setStreamMute(AudioManager.STREAM_MUSIC, mute);
             }
             success = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("ServerApplication.muteAudio::mute = [" + mute + "] success = " + success);
         return success;
     }
 
